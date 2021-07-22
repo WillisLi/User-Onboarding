@@ -3,22 +3,17 @@ import React from 'react'
 export default function Form(props) {
     const { values, input, submit, disabled, errors } = props;
 
-    const onSubmit = event => {
-        event.preventDefault()
+    const onSubmit = evt => {
+        evt.preventDefault()
         submit()
     }
 
-    const changeHandler = event => {
-        const { name, value, type, checked } = event.target;
+    const changeHandler = evt => {
+        const { name, value, type, checked } = evt.target;
         const valueToUse = type === 'checkbox' ? checked : value
-        // let valueToUse
-        // if (type === 'checkbox') {
-        //   valueToUse2 = checked
-        // } else {
-        //   valueToUse2 = value
-        // }
+        
         input(name, valueToUse);
-        }
+    }
 
     return (
         <form className='form container' onSubmit={onSubmit}>
@@ -27,7 +22,7 @@ export default function Form(props) {
             <button disabled={disabled}>submit</button>
 
             <div className='errors'>
-                <div>{errors.username}</div>
+                <div>{errors.name}</div>
                 <div>{errors.email}</div>
                 <div>{errors.password}</div>
             </div>
@@ -35,7 +30,7 @@ export default function Form(props) {
 
         <label>Name&nbsp;
           <input
-            value={values.username}
+            value={values.name}
             onChange={changeHandler}
             name='name'
             type='text'
@@ -63,9 +58,9 @@ export default function Form(props) {
         <label>Terms of Service
           <input
             type='checkbox'
-            name='checked'
+            name='tos'
             onChange={changeHandler}
-            checked={values.checked}
+            checked={values.tos}
           />
         </label>
 

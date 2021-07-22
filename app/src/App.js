@@ -10,7 +10,7 @@ const initialFormValues = {
     name: "",
     email: "",
     password: "",
-    checked: false,
+    tos: false,
 }
 
 const errorMessages = {
@@ -19,16 +19,19 @@ const errorMessages = {
     password: "",
 }
 
+const initialFriends = [];
+const initialDisabled = true;
+
 function App() {
-  const [users, setUsers] = useState([]);
+  const [users, setUsers] = useState(initialFriends);
   const [formValues, setFormValues] = useState(initialFormValues);
   const [formErrors, setFormErrors] = useState(errorMessages);
-  const [disabled, setDisabled] = useState(true);
+  const [disabled, setDisabled] = useState(initialDisabled);
 
   const getUsers = () => {
       axios.get("https://reqres.in/api/users")
         .then(response => {
-            setFormValues(response.data.data);
+            setUsers(response.data.data);
         })
         .catch(error => {
             console.log(error)
@@ -48,15 +51,13 @@ function App() {
         })
   }
 
-  const submitForm = () => {
-      const newUser = {
-        name: formValues.name.trim(),
-        email: formValues.email.trim(),
-        password: formValues.password.trim(),
-        checked: formValues.checked,
-      }
-
-      postUser(newUser);
+  const validate = (name, value) => {
+    reach(formSchema, name)
+      .validate(value)
+      .then(() => 
+        setFormErrors({ ...formErrors, [name]: '' }))
+      .catch(err => 
+        setFormErrors({ ...formErrors, [name]: err.errors[0]}))
   }
 
   const inputChange = (name, value) => {
@@ -67,6 +68,17 @@ function App() {
     })
   }
 
+  const submitForm = () => {
+      const newUser = {
+        name: formValues.name.trim(),
+        email: formValues.email.trim(),
+        password: formValues.password.trim(),
+        tos: formValues.tos,
+      }
+
+      postUser(newUser);
+  }
+
   useEffect(() => {
       getUsers();
   }, [])
@@ -75,16 +87,10 @@ function App() {
       formSchema.isValid(formValues).then(valid => setDisabled(!valid))
   }, [formValues])
 
-  const validate = (name, value) => {
-    reach(formSchema, name)
-      .validate(value)
-      .then(() => setFormErrors({ ...formErrors, [name]: '' }))
-      .catch(err => setFormErrors({ ...formErrors, [name]: err.errors[0]}))
-  }
-
   return (
     <div className="App">
-      <h1>Users List</h1>
+      <header><h1>Users List</h1></header>
+      
       <Form
           values = {formValues}
           input = {inputChange}
